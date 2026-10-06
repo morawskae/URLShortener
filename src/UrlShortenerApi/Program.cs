@@ -1,9 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using UrlShortener.Services;
 using URLShortener.Data;
+using UrlShortener.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IShortUrlService,ShortUrlService>();
 
 builder.Services.AddDbContext<URLShortenerDbContext>(options =>
 {
@@ -18,5 +21,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapShortUrlEndpoints();
 app.UseHttpsRedirection();
 app.Run();
