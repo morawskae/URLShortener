@@ -5,7 +5,7 @@ namespace UrlShortener.Services{
 
     public interface IShortUrlService
     {
-        public Task<ShortUrl> CreateAsync(string originalUrl);
+        public Task<ShortUrl> CreateAsync(RequestDto request);
         public Task<ShortUrl?> RedirectAsync(string shortCode);
         public Task<ShortUrlDetailsDto?> DetailShortUrlAsync(string shortCode);
 

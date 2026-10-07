@@ -1,4 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore;
 using URLShortener.Data;
 using URLShortener.Dtos;
@@ -8,14 +7,34 @@ namespace UrlShortener.Services
 {
 
     public class ShortUrlService(URLShortenerDbContext context) : IShortUrlService
-    {        public async Task<ShortUrl> CreateAsync(string originalUrl)
+    {
+        private const int MAX_ATTEMPTS = 10;
+        
+                public async Task<ShortUrl> CreateAsync(RequestDto request)
         {
-            var shortCode = generateShortCode();
+            if (string.IsNullOrWhiteSpace(request.OriginalUrl))
+            {
+                throw new ArgumentException("Original Url is required");
+            }
+
+            if(!Uri.TryCreate(request.OriginalUrl,UriKind.Absolute,out var uri)
+            || (uri.Scheme!= Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            {
+                throw new ArgumentException("Original URL must be a valid HTTP or HTTPS URL.");
+            }
+            if(request.ExpiresAt.HasValue&& request.ExpiresAt <= DateTime.UtcNow)
+            {
+                throw new ArgumentException("Expiration date must be in the future");
+            }
+            var shortCode = await CreateShortCode();
+
+
             var shortUrl = new ShortUrl
             {
                 ShortCode = shortCode,
-                OriginalUrl  = originalUrl,
-                CreatedAt = DateTime.UtcNow
+                OriginalUrl  = request.OriginalUrl,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = request.ExpiresAt
             };
 
             context.ShortUrls.Add(shortUrl);
@@ -24,26 +43,43 @@ namespace UrlShortener.Services
 
         }
 
-        private string generateShortCode()
+        private async Task<string> CreateShortCode()
+        {
+            int attempts = 0;
+            while (attempts < MAX_ATTEMPTS)
+            {
+                var shortCode = GenerateShortCode();
+                if (await IsShortCodeAvailable(shortCode))
+                {
+                    return shortCode;
+                }
+                attempts++;
+            }
+         
+            throw new Exception("Was unable to create a shortCode");
+
+        }
+        private string GenerateShortCode()
         {
             const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(
                 Enumerable.Range(0,6).Select(_ => chars[Random.Shared.Next(chars.Length)]).ToArray());
         }
 
+        private async Task<bool> IsShortCodeAvailable(string shortCode)
+        {
+            return !await context.ShortUrls.AnyAsync(s=>s.ShortCode == shortCode);
+        }
         public async Task<ShortUrl?> RedirectAsync(string shortCode)
         {
-            var shortUrl = await context.ShortUrls.FirstOrDefaultAsync(s=>s.ShortCode==shortCode);
+            var shortUrl = await context.ShortUrls
+            .FirstOrDefaultAsync(s=>s.ShortCode==shortCode && (s.ExpiresAt > DateTime.UtcNow || s.ExpiresAt==null));
             if (shortUrl is null)
             {
                 return null;
             }
 
-            if(shortUrl.ExpiresAt.HasValue  && shortUrl.ExpiresAt <= DateTime.UtcNow)
-            {
-                return null;
-            }
-            shortUrl.ClickCount ++;
+            shortUrl.ClickCount++;
             await context.SaveChangesAsync();
             return shortUrl;
         }
@@ -77,5 +113,6 @@ namespace UrlShortener.Services
             context.ShortUrls.Remove(shortUrl);
             await context.SaveChangesAsync();
         }
+
     }
 }

@@ -10,7 +10,7 @@ namespace UrlShortener.Endpoints
             app.MapPost("/api/urls",(
                 async (RequestDto request, IShortUrlService service) =>
                 {
-                    var shortUrl = await service.CreateAsync(request.OriginalUrl);
+                    var shortUrl = await service.CreateAsync(request);
                     return Results.Created($"/{shortUrl.ShortCode}",shortUrl);
                 }
             ));
