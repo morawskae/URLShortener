@@ -10,11 +10,11 @@ namespace UrlShortener.Services
     {
         private const int MAX_ATTEMPTS = 10;
         
-                public async Task<ShortUrl> CreateAsync(RequestDto request)
+        public async Task<ShortUrl> CreateAsync(RequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.OriginalUrl))
             {
-                throw new ArgumentException("Original Url is required");
+                throw new ArgumentException("Original Url is required.");
             }
 
             if(!Uri.TryCreate(request.OriginalUrl,UriKind.Absolute,out var uri)
@@ -24,7 +24,7 @@ namespace UrlShortener.Services
             }
             if(request.ExpiresAt.HasValue&& request.ExpiresAt <= DateTime.UtcNow)
             {
-                throw new ArgumentException("Expiration date must be in the future");
+                throw new ArgumentException("Expiration date must be in the future.");
             }
             var shortCode = await CreateShortCode();
 
