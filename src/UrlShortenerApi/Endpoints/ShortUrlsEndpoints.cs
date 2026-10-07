@@ -14,6 +14,29 @@ namespace UrlShortener.Endpoints
                     return Results.Created($"/{shortUrl.ShortCode}",shortUrl);
                 }
             ));
+
+            app.MapGet("api/{shortCode}",(
+                async (string shortCode, IShortUrlService service)=>
+                {
+                    var shortUrl = await service.RedirectAsync(shortCode);
+                    if (shortUrl is null)
+                    {
+                        return Results.NotFound();
+                    }
+                    return Results.Redirect(shortUrl.OriginalUrl);
+                }
+            ));
+            app.MapGet("api/urls/{shortCode}",(
+                async (string shortCode, IShortUrlService service) =>
+                {
+                    var response = await service.DetailShortUrlAsync(shortCode);
+                    if(response is null)
+                    {
+                        return Results.NotFound();
+                    }
+                    return Results.Ok(response);
+                }
+            ));
         }
     }
 }
