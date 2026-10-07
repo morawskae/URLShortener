@@ -24,3 +24,6 @@ if (app.Environment.IsDevelopment())
 app.MapShortUrlEndpoints();
 app.UseHttpsRedirection();
 app.Run();
+
+public partial class Program {}
+

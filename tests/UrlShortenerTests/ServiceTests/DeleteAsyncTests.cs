@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using UrlShortener.Services;
 using URLShortener.Dtos;
 
-namespace UrlShortener.Tests
+namespace UrlShortener.Tests.Service
 {
     public class DeleteAsyncTests
     {

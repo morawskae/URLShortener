@@ -1,7 +1,7 @@
 using UrlShortener.Services;
 using URLShortener.Models;
 
-namespace UrlShortener.Tests
+namespace UrlShortener.Tests.Service
 {
     public class RedirectAsyncTests
     {

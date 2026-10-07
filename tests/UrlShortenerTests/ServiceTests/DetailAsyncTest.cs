@@ -1,7 +1,7 @@
 using URLShortener.Dtos;
 using UrlShortener.Services;
 
-namespace UrlShortener.Tests
+namespace UrlShortener.Tests.Service
 {
     public class ShortUrlServiceTests
     {
