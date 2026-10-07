@@ -66,5 +66,16 @@ namespace UrlShortener.Services
             
             };
         }
+
+        public async Task DeleteAsync(string shortCode)
+        {
+            var shortUrl = await context.ShortUrls.FirstOrDefaultAsync(s=>s.ShortCode == shortCode);
+            if (shortUrl is null)
+            {
+                return;
+            }
+            context.ShortUrls.Remove(shortUrl);
+            await context.SaveChangesAsync();
+        }
     }
 }

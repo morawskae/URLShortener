@@ -37,6 +37,13 @@ namespace UrlShortener.Endpoints
                     return Results.Ok(response);
                 }
             ));
+            app.MapDelete("api/urls/{shortCode}",(
+                async (string shortCode, IShortUrlService service) =>
+                {
+                    await service.DeleteAsync(shortCode);  
+                    return Results.NoContent();
+                }
+            ));
         }
     }
 }
