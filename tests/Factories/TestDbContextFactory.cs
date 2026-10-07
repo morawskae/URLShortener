@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using URLShortener.Data;
+using UrlShortener.Data;
 
 namespace UrlShortener.Tests
 {
@@ -14,10 +14,10 @@ namespace UrlShortener.Tests
             connection.Open();
         }
 
-        public URLShortenerDbContext CreateContext()
+        public UrlShortenerDbContext CreateContext()
         {
-            var options = new DbContextOptionsBuilder<URLShortenerDbContext>().UseSqlite(connection).Options;
-            var context = new URLShortenerDbContext(options);
+            var options = new DbContextOptionsBuilder<UrlShortenerDbContext>().UseSqlite(connection).Options;
+            var context = new UrlShortenerDbContext(options);
             context.Database.EnsureCreated();
             return context;
         }

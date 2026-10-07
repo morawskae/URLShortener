@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
-using URLShortener.Dtos;
-using URLShortener.Models;
+using UrlShortener.Dtos;
+using UrlShortener.Models;
 
 namespace UrlShortener.Tests.IntegrationTests
 {
@@ -28,7 +28,7 @@ namespace UrlShortener.Tests.IntegrationTests
             var response = await client.PostAsJsonAsync("/api/urls",request);
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             
-            var result = await response.Content.ReadFromJsonAsync<ShortUrl>();
+            var result = await response.Content.ReadFromJsonAsync<ResponseDto>();
 
             Assert.NotNull(result);
             Assert.Equal("https://example.com", result.OriginalUrl);
@@ -80,7 +80,7 @@ namespace UrlShortener.Tests.IntegrationTests
 
             var createResponse = await client.PostAsJsonAsync("/api/urls",request);
             Assert.Equal(HttpStatusCode.Created,createResponse.StatusCode);
-            var created = await createResponse.Content.ReadFromJsonAsync<ShortUrl>();
+            var created = await createResponse.Content.ReadFromJsonAsync<ResponseDto>();
 
             Assert.NotNull(created);
 
@@ -112,23 +112,23 @@ namespace UrlShortener.Tests.IntegrationTests
 
             var createResponse = await client.PostAsJsonAsync("/api/urls",request);
             Assert.Equal(HttpStatusCode.Created,createResponse.StatusCode);
-            var created = await createResponse.Content.ReadFromJsonAsync<ShortUrl>();
+            var created = await createResponse.Content.ReadFromJsonAsync<ResponseDto>();
 
             Assert.NotNull(created);
 
             var response = await client.GetAsync($"/api/urls/{created.ShortCode}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var result = await response.Content.ReadFromJsonAsync<ShortUrl>();
+            var result = await response.Content.ReadFromJsonAsync<ShortUrlDetailsDto>();
 
             
             Assert.NotNull(result);
             Assert.Equal(created.Id, result.Id);
             Assert.Equal(created.ShortCode, result.ShortCode);
             Assert.Equal(created.OriginalUrl, result.OriginalUrl);
-            Assert.Equal(created.CreatedAt, result.CreatedAt);
             Assert.Equal(created.ExpiresAt, result.ExpiresAt);
-            Assert.Equal(created.ClickCount, result.ClickCount);
+            Assert.Equal(0, result.ClickCount);
+            Assert.NotEqual(default, result.CreatedAt);
 
         }
         
@@ -154,7 +154,7 @@ namespace UrlShortener.Tests.IntegrationTests
 
             var createResponse = await client.PostAsJsonAsync("/api/urls",request);
             Assert.Equal(HttpStatusCode.Created,createResponse.StatusCode);
-            var created = await createResponse.Content.ReadFromJsonAsync<ShortUrl>();
+            var created = await createResponse.Content.ReadFromJsonAsync<ResponseDto>();
 
             Assert.NotNull(created);
 

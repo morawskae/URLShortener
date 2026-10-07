@@ -1,4 +1,4 @@
-namespace URLShortener.Dtos
+namespace UrlShortener.Dtos
 {
     public class ShortUrlDetailsDto
     {

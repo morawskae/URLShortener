@@ -1,4 +1,5 @@
-using URLShortener.Dtos;
+using Microsoft.EntityFrameworkCore;
+using UrlShortener.Dtos;
 using UrlShortener.Services;
 
 namespace UrlShortener.Tests.Service
@@ -30,7 +31,12 @@ namespace UrlShortener.Tests.Service
                 OriginalUrl ="https://example.com"
             };
 
-            var shortUrl = await service.CreateAsync(request);
+            var created = await service.CreateAsync(request);
+
+            Assert.NotNull(created);
+
+            var shortUrl = await context.ShortUrls.FirstOrDefaultAsync(s=>s.ShortCode == created.ShortCode);
+            Assert.NotNull(shortUrl);
 
             var result = await service.DetailShortUrlAsync(shortUrl.ShortCode);
 

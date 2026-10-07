@@ -1,5 +1,5 @@
 using UrlShortener.Services;
-using URLShortener.Dtos;
+using UrlShortener.Dtos;
 
 namespace UrlShortener.Endpoints
 {

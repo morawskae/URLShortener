@@ -4,7 +4,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using URLShortener.Data;
+using UrlShortener.Data;
 
 namespace UrlShortener.Tests
 {
@@ -21,14 +21,14 @@ namespace UrlShortener.Tests
         {
             builder.ConfigureServices(services =>
             {
-                services.RemoveAll<DbContextOptions<URLShortenerDbContext>>();
-                services.AddDbContext<URLShortenerDbContext>(options =>
+                services.RemoveAll<DbContextOptions<UrlShortenerDbContext>>();
+                services.AddDbContext<UrlShortenerDbContext>(options =>
                 {
                     options.UseSqlite(connection);
                 });
                 var serviceProvider = services.BuildServiceProvider();
                 using var scope = serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<URLShortenerDbContext>();
+                var context = scope.ServiceProvider.GetRequiredService<UrlShortenerDbContext>();
 
                 context.Database.EnsureCreated();
             });

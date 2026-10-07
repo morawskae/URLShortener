@@ -1,5 +1,5 @@
 using UrlShortener.Services;
-using URLShortener.Models;
+using UrlShortener.Models;
 
 namespace UrlShortener.Tests.Service
 {
@@ -48,7 +48,10 @@ namespace UrlShortener.Tests.Service
             var result = await service.RedirectAsync("abc123");
 
             Assert.NotNull(result);
-            Assert.Equal(1, result.ClickCount);
+
+            var details = await service.DetailShortUrlAsync("abc123");
+            Assert.NotNull(details);
+            Assert.Equal(1, details.ClickCount);
             
         }
 

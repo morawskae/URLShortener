@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using URLShortener.Data;
-using URLShortener.Dtos;
-using URLShortener.Models;
+using UrlShortener.Data;
+using UrlShortener.Dtos;
+using UrlShortener.Models;
 
 namespace UrlShortener.Services
 {
 
-    public class ShortUrlService(URLShortenerDbContext context) : IShortUrlService
+    public class ShortUrlService(UrlShortenerDbContext context) : IShortUrlService
     {
         private const int MAX_ATTEMPTS = 10;
         
-        public async Task<ShortUrl> CreateAsync(RequestDto request)
+        public async Task<ResponseDto> CreateAsync(RequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.OriginalUrl))
             {
@@ -39,7 +39,13 @@ namespace UrlShortener.Services
 
             context.ShortUrls.Add(shortUrl);
             await context.SaveChangesAsync();
-            return shortUrl;
+            return new ResponseDto
+            {
+                Id = shortUrl.Id,
+                ShortCode = shortUrl.ShortCode,
+                OriginalUrl = shortUrl.OriginalUrl,
+                ExpiresAt = shortUrl.ExpiresAt
+            };
 
         }
 
@@ -70,7 +76,7 @@ namespace UrlShortener.Services
         {
             return !await context.ShortUrls.AnyAsync(s=>s.ShortCode == shortCode);
         }
-        public async Task<ShortUrl?> RedirectAsync(string shortCode)
+        public async Task<ResponseDto?> RedirectAsync(string shortCode)
         {
             var shortUrl = await context.ShortUrls
             .FirstOrDefaultAsync(s=>s.ShortCode==shortCode && (s.ExpiresAt > DateTime.UtcNow || s.ExpiresAt==null));
@@ -81,7 +87,13 @@ namespace UrlShortener.Services
 
             shortUrl.ClickCount++;
             await context.SaveChangesAsync();
-            return shortUrl;
+            return new ResponseDto
+            {
+                Id = shortUrl.Id,
+                ShortCode = shortUrl.ShortCode,
+                OriginalUrl = shortUrl.OriginalUrl,
+                ExpiresAt = shortUrl.ExpiresAt
+            };
         }
 
         public async Task<ShortUrlDetailsDto?> DetailShortUrlAsync(string shortCode)

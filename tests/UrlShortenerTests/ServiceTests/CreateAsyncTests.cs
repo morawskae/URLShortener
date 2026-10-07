@@ -1,4 +1,4 @@
-using URLShortener.Dtos;
+using UrlShortener.Dtos;
 using UrlShortener.Services;
 
 namespace UrlShortener.Tests.Service
@@ -21,7 +21,6 @@ namespace UrlShortener.Tests.Service
             Assert.Equal("https://example.com",result.OriginalUrl);
             Assert.Equal(6,result.ShortCode.Length);
             Assert.Null(result.ExpiresAt);
-            Assert.Equal(0, result.ClickCount);
 
         }
 
